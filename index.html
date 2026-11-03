@@ -199,6 +199,16 @@ footer{text-align:center;color:#69788a;font-size:12px;padding:20px}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
 <script>
+const SUPABASE_URL = "https://qcmrqzlpmooyqxvtrcan.supabase.co/rest/v1/";
+const SUPABASE_KEY = "sb_publishable_IeTOaQeLFWZdyXTVw2OByQ_Y_Naaxkb";
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+</script>
+
+<script>
 
 const initialTransactions=[
 
