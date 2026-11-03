@@ -92,6 +92,42 @@ footer{text-align:center;color:#69788a;font-size:12px;padding:20px}
 
 <main>
 
+<div class="card" id="loginCard">
+  <h2>Money Clarity Login</h2>
+  <p class="muted">
+    Sign in to your private household account.
+  </p>
+
+  <label for="loginEmail">Email</label>
+  <input
+    id="loginEmail"
+    type="email"
+    autocomplete="username"
+    placeholder="Your email address"
+    style="width:100%;padding:12px"
+  >
+
+  <label for="loginPassword">Password</label>
+  <input
+    id="loginPassword"
+    type="password"
+    autocomplete="current-password"
+    placeholder="Your password"
+    style="width:100%;padding:12px"
+  >
+
+  <div class="actions">
+    <button onclick="signIn()">
+      Sign in
+    </button>
+    <button class="secondary" onclick="signOut()">
+      Sign out
+    </button>
+  </div>
+
+  <p id="loginStatus" class="muted"></p>
+</div>
+
 <div class="warning" style="margin-bottom:15px">
 
 <strong>Demonstration mode</strong>
@@ -439,6 +475,34 @@ if(!t.category&&rules[t.merchant])t.category=rules[t.merchant];
 });
 
 save();render();
+
+async function signIn() {
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
+  const status = document.getElementById("loginStatus");
+
+  status.textContent = "Signing in...";
+
+  try {
+    const { data, error } =
+      await db.auth.signInWithPassword({ email, password });
+
+    if (error) throw error;
+
+    status.textContent =
+      "Signed in as " + data.user.email;
+
+    document.getElementById("loginPassword").value = "";
+  } catch (error) {
+    status.textContent = "Sign-in failed: " + error.message;
+  }
+}
+
+async function signOut() {
+  const { error } = await db.auth.signOut();
+  document.getElementById("loginStatus").textContent =
+    error ? error.message : "Signed out.";
+}
 
 </script>
 
