@@ -523,6 +523,35 @@ async function signOut() {
     error ? error.message : "Signed out.";
 }
 
+async function restoreLogin() {
+  const status = document.getElementById("loginStatus");
+
+  const { data: { session }, error } =
+    await db.auth.getSession();
+
+  if (error || !session) {
+    status.textContent = "Please sign in.";
+    return;
+  }
+
+  const { data: households, error: householdError } =
+    await db
+      .from("households")
+      .select("id, name")
+      .limit(1);
+
+  if (householdError || !households?.length) {
+    status.textContent =
+      "Signed in, but household access could not be verified.";
+    return;
+  }
+
+  status.textContent =
+    "Signed in · " + households[0].name;
+}
+
+restoreLogin();
+
 </script>
 
 </body>
