@@ -492,6 +492,25 @@ async function signIn() {
     status.textContent =
       "Signed in as " + data.user.email;
 
+const { data: households, error: householdError } =
+  await db
+    .from("households")
+    .select("id, name")
+    .limit(1);
+
+if (householdError) {
+  throw householdError;
+}
+
+if (!households || households.length === 0) {
+  status.textContent =
+    "Signed in, but no household membership was found.";
+  return;
+}
+
+status.textContent =
+  "Signed in · " + households[0].name;
+
     document.getElementById("loginPassword").value = "";
   } catch (error) {
     status.textContent = "Sign-in failed: " + error.message;
