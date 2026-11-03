@@ -518,10 +518,22 @@ status.textContent =
 }
 
 async function signOut() {
-  const { error } = await db.auth.signOut();
-  document.getElementById("loginStatus").textContent =
-    error ? error.message : "Signed out.";
+  const status = document.getElementById("loginStatus");
+
+  status.textContent = "Signing out...";
+
+  try {
+    const { error } = await db.auth.signOut();
+
+    if (error) throw error;
+
+    status.textContent = "Signed out. Please sign in.";
+    document.getElementById("loginPassword").value = "";
+  } catch (error) {
+    status.textContent = "Sign-out failed: " + error.message;
+  }
 }
+
 
 async function restoreLogin() {
   const status = document.getElementById("loginStatus");
