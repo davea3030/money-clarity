@@ -552,6 +552,14 @@ async function restoreLogin() {
 
 restoreLogin();
 
+db.auth.onAuthStateChange((event) => {
+  if (event === "SIGNED_OUT") {
+    document.getElementById("loginStatus").textContent =
+      "Signed out. Please sign in.";
+    document.getElementById("loginPassword").value = "";
+  }
+});
+
 </script>
 
 </body>
