@@ -478,6 +478,19 @@ if(!t.category&&rules[t.merchant])t.category=rules[t.merchant];
 
 save();render();
 
+function setDashboardVisible(visible) {
+  document.getElementById("appTabs")
+    .classList.toggle("hidden", !visible);
+
+  document.querySelectorAll("main section")
+    .forEach(section => section.classList.add("hidden"));
+
+  if (visible) {
+    document.getElementById("dashboard")
+      .classList.remove("hidden");
+  }
+}
+
 async function signIn() {
   const email = document.getElementById("loginEmail").value.trim();
   const password = document.getElementById("loginPassword").value;
@@ -512,6 +525,8 @@ if (!households || households.length === 0) {
 
 status.textContent =
   "Signed in · " + households[0].name;
+
+setDashboardVisible(true);
 
     document.getElementById("loginPassword").value = "";
   } catch (error) {
@@ -562,6 +577,8 @@ async function restoreLogin() {
 
   status.textContent =
     "Signed in · " + households[0].name;
+
+setDashboardVisible(true);
 }
 
 restoreLogin();
@@ -570,7 +587,11 @@ db.auth.onAuthStateChange((event) => {
   if (event === "SIGNED_OUT") {
     document.getElementById("loginStatus").textContent =
       "Signed out. Please sign in.";
+    
+setDashboardVisible(false);
+
     document.getElementById("loginPassword").value = "";
+setDashboardVisible(false); 
   }
 });
 
