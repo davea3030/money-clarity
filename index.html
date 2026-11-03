@@ -1,0 +1,435 @@
+
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Money Clarity</title>
+
+<style>
+
+:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#172333;background:#f4f6f9}
+
+*{box-sizing:border-box}
+
+body{margin:0}
+
+header{background:#14283e;color:white;padding:22px 18px}
+
+header h1{margin:0;font-size:25px}
+
+header p{margin:5px 0;color:#bed0df}
+
+main{max-width:850px;margin:auto;padding:16px}
+
+.card{background:white;border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 2px 9px #152c4010}
+
+h2{font-size:19px;margin:0 0 14px}
+
+small,.muted{color:#69788a}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.metric{background:#edf3f8;border-radius:10px;padding:13px}
+
+.metric strong{display:block;font-size:21px;margin-top:5px}
+
+button,select{font:inherit;padding:11px;border-radius:9px}
+
+button{border:0;background:#1767b2;color:white;cursor:pointer}
+
+button.secondary{background:#e7edf3;color:#172333}
+
+button:disabled{opacity:.45}
+
+select{width:100%;border:1px solid #ccd5df;background:white}
+
+label{display:block;font-weight:600;margin:14px 0 6px}
+
+.tabs{display:flex;gap:8px;overflow:auto;margin-bottom:15px}
+
+.tabs button{white-space:nowrap}
+
+.tabs button.active{background:#14283e}
+
+.hidden{display:none}
+
+.transaction{padding:12px 0;border-bottom:1px solid #e7edf3}
+
+.transaction:last-child{border:0}
+
+.row{display:flex;justify-content:space-between;gap:12px;align-items:center}
+
+.tag{font-size:12px;background:#edf3f8;border-radius:15px;padding:4px 8px}
+
+.warning{background:#fff3dc;padding:12px;border-radius:9px}
+
+.success{background:#e8f5ed;padding:12px;border-radius:9px}
+
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+
+footer{text-align:center;color:#69788a;font-size:12px;padding:20px}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>Money Clarity</h1>
+
+<p>Understand your money. Get ahead.</p>
+
+</header>
+
+<main>
+
+<div class="warning" style="margin-bottom:15px">
+
+<strong>Demonstration mode</strong>
+
+<div>This version uses fictional transactions. Do not upload real banking information to this public website.</div>
+
+</div>
+
+<div class="tabs">
+
+<button class="active" onclick="showTab('dashboard',this)">Dashboard</button>
+
+<button onclick="showTab('transactions',this)">Transactions</button>
+
+<button onclick="showTab('review',this)">Category review</button>
+
+<button onclick="showTab('rules',this)">Rules</button>
+
+</div>
+
+<section id="dashboard">
+
+<div class="card">
+
+<h2>Household overview</h2>
+
+<div class="grid">
+
+<div class="metric"><small>Monthly income</small><strong>$12,500</strong></div>
+
+<div class="metric"><small>Monthly expenses</small><strong>$10,200</strong></div>
+
+<div class="metric"><small>Credit card debt</small><strong>$8,400</strong></div>
+
+<div class="metric"><small>Potential surplus</small><strong>$2,300</strong></div>
+
+</div>
+
+<p class="muted">Illustrative figures only. Real insights will come from your private transaction data.</p>
+
+</div>
+
+<div class="card">
+
+<h2>Money Clarity insights</h2>
+
+<p>1. Identify recurring bills and reserve money before payday.</p>
+
+<p>2. Separate credit card repayments from actual purchases.</p>
+
+<p>3. Learn merchant categories to reduce manual reviews.</p>
+
+</div>
+
+</section>
+
+<section id="transactions" class="hidden">
+
+<div class="card">
+
+<h2>Transactions</h2>
+
+<div id="transactionList"></div>
+
+</div>
+
+</section>
+
+<section id="review" class="hidden">
+
+<div class="card">
+
+<h2>Review uncertain transactions</h2>
+
+<p class="muted">Only transactions without a reliable category appear here.</p>
+
+<div id="reviewContent"></div>
+
+</div>
+
+</section>
+
+<section id="rules" class="hidden">
+
+<div class="card">
+
+<h2>Learned category rules</h2>
+
+<div id="ruleList"></div>
+
+<div class="actions">
+
+<button class="secondary" onclick="resetDemo()">Reset demonstration</button>
+
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+<footer>Money Clarity · Private household finance project</footer>
+
+<script>
+
+const initialTransactions=[
+
+{id:1,date:"2026-10-22",merchant:"COLES GEELONG",amount:-124.80,category:"Groceries"},
+
+{id:2,date:"2026-10-23",merchant:"LOCAL CAFE GEELONG",amount:-18.50,category:null},
+
+{id:3,date:"2026-10-24",merchant:"WOOLWORTHS",amount:-92.30,category:"Groceries"},
+
+{id:4,date:"2026-10-25",merchant:"LOCAL CAFE GEELONG",amount:-12.00,category:null},
+
+{id:5,date:"2026-10-26",merchant:"UNKNOWN MERCHANT X",amount:-44.95,category:null},
+
+{id:6,date:"2026-10-27",merchant:"NETFLIX",amount:-25.99,category:"Subscriptions"},
+
+{id:7,date:"2026-10-28",merchant:"LOCAL CAFE GEELONG",amount:-9.50,category:null}
+
+];
+
+const categories=[
+
+"Groceries","Dining & takeaway","Utilities","Insurance",
+
+"Transport","Sport & fitness","Children & education",
+
+"Shopping","Health","Pets","Entertainment",
+
+"Subscriptions","Housing","Other"
+
+];
+
+let transactions=JSON.parse(localStorage.getItem("mc_transactions")||"null")||structuredClone(initialTransactions);
+
+let rules=JSON.parse(localStorage.getItem("mc_rules")||"{}");
+
+let selectedId=null;
+
+function save(){
+
+localStorage.setItem("mc_transactions",JSON.stringify(transactions));
+
+localStorage.setItem("mc_rules",JSON.stringify(rules));
+
+}
+
+function showTab(id,button){
+
+document.querySelectorAll("main section").forEach(s=>s.classList.add("hidden"));
+
+document.getElementById(id).classList.remove("hidden");
+
+document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+
+button.classList.add("active");
+
+render();
+
+}
+
+function money(n){
+
+return new Intl.NumberFormat("en-AU",{style:"currency",currency:"AUD"}).format(n);
+
+}
+
+function render(){
+
+renderTransactions();renderReview();renderRules();
+
+}
+
+function renderTransactions(){
+
+document.getElementById("transactionList").innerHTML=transactions.map(t=>`
+
+<div class="transaction">
+
+<div class="row"><strong>${t.merchant}</strong><strong>${money(t.amount)}</strong></div>
+
+<div class="row"><small>${t.date}</small><span class="tag">${t.category||"Needs review"}</span></div>
+
+</div>`).join("");
+
+}
+
+function renderReview(){
+
+const pending=transactions.filter(t=>!t.category);
+
+const box=document.getElementById("reviewContent");
+
+if(!pending.length){
+
+box.innerHTML='<div class="success">All transactions categorised.</div>';
+
+return;
+
+}
+
+const t=pending[0];
+
+selectedId=t.id;
+
+box.innerHTML=`
+
+<p><strong>${t.merchant}</strong></p>
+
+<p>${t.date} · ${money(t.amount)}</p>
+
+<p class="muted">${pending.length} transaction(s) awaiting review</p>
+
+<label for="category">Category</label>
+
+<select id="category">
+
+<option value="">Choose category</option>
+
+${categories.map(c=>`<option value="${c}">${c}</option>`).join("")}
+
+</select>
+
+<label for="scope">Apply this decision to</label>
+
+<select id="scope">
+
+<option value="one">This transaction only</option>
+
+<option value="history">All matching historical transactions</option>
+
+<option value="future">All matching historical and future transactions</option>
+
+</select>
+
+<div class="actions">
+
+<button onclick="confirmCategory()">Confirm category</button>
+
+<button class="secondary" onclick="skipTransaction()">Skip</button>
+
+</div>`;
+
+}
+
+function confirmCategory(){
+
+const category=document.getElementById("category").value;
+
+const scope=document.getElementById("scope").value;
+
+if(!category){alert("Choose a category first.");return;}
+
+const t=transactions.find(x=>x.id===selectedId);
+
+if(!t)return;
+
+if(scope==="one"){
+
+t.category=category;
+
+}else{
+
+transactions.filter(x=>x.merchant===t.merchant).forEach(x=>x.category=category);
+
+if(scope==="future")rules[t.merchant]=category;
+
+}
+
+save();render();
+
+}
+
+function skipTransaction(){
+
+const t=transactions.find(x=>x.id===selectedId);
+
+if(!t)return;
+
+const i=transactions.indexOf(t);
+
+transactions.push(transactions.splice(i,1)[0]);
+
+render();
+
+}
+
+function renderRules(){
+
+const entries=Object.entries(rules);
+
+document.getElementById("ruleList").innerHTML=entries.length?
+
+entries.map(([merchant,category])=>`
+
+<div class="transaction">
+
+<div class="row"><strong>${merchant}</strong><span class="tag">${category}</span></div>
+
+<button class="secondary" onclick="deleteRule('${merchant.replace(/'/g,"\\'")}')">Delete rule</button>
+
+</div>`).join(""):
+
+'<p class="muted">No learned rules yet. Confirm a category with the historical and future option to create one.</p>';
+
+}
+
+function deleteRule(merchant){
+
+delete rules[merchant];
+
+save();render();
+
+}
+
+function resetDemo(){
+
+if(!confirm("Reset all sample transactions and rules?"))return;
+
+transactions=structuredClone(initialTransactions);
+
+rules={};save();render();
+
+}
+
+transactions.forEach(t=>{
+
+if(!t.category&&rules[t.merchant])t.category=rules[t.merchant];
+
+});
+
+save();render();
+
+</script>
+
+</body>
+
+</html>
