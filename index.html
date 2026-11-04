@@ -154,6 +154,13 @@ footer{text-align:center;color:#69788a;font-size:12px;padding:20px}
 </div>
 
 
+<div class="actions">
+  <button class="secondary"
+    onclick="testTransactionUpdateSecurity()">
+    Test transaction update security
+  </button>
+</div>
+
 
 
 </div>
@@ -581,6 +588,39 @@ async function signOut() {
   }
 }
 
+
+async function testTransactionUpdateSecurity() {
+  const status = document.getElementById("loginStatus");
+
+  const transactionId = prompt("Paste the test transaction ID:");
+  if (!transactionId) return;
+
+  status.textContent = "Testing update security...";
+
+  const { data, error } = await db
+    .from("transactions")
+    .update({
+      category: "Unauthorised Change"
+    })
+    .eq("id", transactionId.trim())
+    .select("id");
+
+  if (error) {
+    status.textContent =
+      "Update blocked: " + error.message;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    status.textContent =
+      "Update blocked: No accessible transaction was updated.";
+    return;
+  }
+
+  status.textContent =
+    "WARNING: Update succeeded! " +
+    data.length + " transaction updated.";
+}
 
 async function testTransactionWriteSecurity() {
   const status = document.getElementById("loginStatus");
