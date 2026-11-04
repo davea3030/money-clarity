@@ -659,8 +659,16 @@ data.forEach(account => {
     account.institution
   ].filter(Boolean).join(" · ");
 
-  item.append(name, details);
-  status.appendChild(item);
+  const editButton = document.createElement("button");
+
+editButton.type = "button";
+
+editButton.textContent = "Edit";
+
+editButton.className = "secondary";
+
+editButton.style.marginTop = "8px";
+  
 });
 
 }
