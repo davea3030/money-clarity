@@ -556,6 +556,9 @@ const institutionInput = document.getElementById("newAccountInstitution");
 
   const name = nameInput.value.trim();
   const accountType = typeInput.value;
+  
+const institution = institutionInput.value.trim();
+
 
   if (!name) {
     status.textContent = "Please enter an account name.";
@@ -585,11 +588,14 @@ const institutionInput = document.getElementById("newAccountInstitution");
 
   const { error } = await db
     .from("accounts")
-    .insert({
-      household_id: households[0].id,
-      name: name,
-      account_type: accountType
-    });
+    
+.insert({
+  household_id: households[0].id,
+  name: name,
+  account_type: accountType,
+  institution: institution || null
+});
+
 
   if (error) {
     status.textContent = "Unable to save account: " + error.message;
