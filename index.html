@@ -168,6 +168,23 @@ footer{text-align:center;color:#69788a;font-size:12px;padding:20px}
     <h2>Household accounts</h2>
     <p>Manage the bank accounts and credit cards included in Money Clarity.</p>
     <p id="accountsStatus">No accounts loaded yet.</p>
+    
+<div class="actions">
+  <input
+    type="text"
+    id="newAccountName"
+    placeholder="Account name"
+    maxlength="100"
+    autocomplete="off"
+  >
+
+  <button
+    type="button"
+    onclick="addAccount()">
+    Add account
+  </button>
+</div>
+
   </div>
 </section>
 
