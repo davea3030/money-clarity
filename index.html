@@ -538,6 +538,57 @@ function setDashboardVisible(visible) {
   }
 }
 
+async function addAccount() {
+  const nameInput = document.getElementById("newAccountName");
+  const typeInput = document.getElementById("newAccountType");
+  const status = document.getElementById("accountsStatus");
+
+  const name = nameInput.value.trim();
+  const accountType = typeInput.value;
+
+  if (!name) {
+    status.textContent = "Please enter an account name.";
+    return;
+  }
+
+  const { data: { user }, error: authError } =
+    await db.auth.getUser();
+
+  if (authError || !user) {
+    status.textContent = "Please sign in.";
+    return;
+  }
+
+  const { data: households, error: householdError } =
+    await db
+      .from("households")
+      .select("id")
+      .limit(1);
+
+  if (householdError || !households || households.length !== 1) {
+    status.textContent = "Unable to identify your household.";
+    return;
+  }
+
+  status.textContent = "Saving account...";
+
+  const { error } = await db
+    .from("accounts")
+    .insert({
+      household_id: households[0].id,
+      name: name,
+      account_type: accountType
+    });
+
+  if (error) {
+    status.textContent = "Unable to save account: " + error.message;
+    return;
+  }
+
+  nameInput.value = "";
+  await loadAccounts();
+}
+
 async function loadAccounts() {
   const status = document.getElementById("accountsStatus");
 
