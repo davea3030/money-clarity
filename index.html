@@ -186,7 +186,17 @@ footer{text-align:center;color:#69788a;font-size:12px;padding:20px}
   autocomplete="off"
 >
 
-<select id="newAccountType">
+
+<input
+  type="text"
+  id="newAccountLastFour"
+  placeholder="Last 4 digits (optional)"
+  maxlength="4"
+  inputmode="numeric"
+  pattern="[0-9]{4}"
+  autocomplete="off"
+>
+
   <option value="transaction">Transaction account</option>
   <option value="savings">Savings account</option>
   <option value="credit_card">Credit card</option>
