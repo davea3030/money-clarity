@@ -669,11 +669,71 @@ editButton.className = "secondary";
 
 editButton.style.marginTop = "8px";
 
-editButton.addEventListener("click", () => {
 
-  alert("Account editing is coming next.");
+editButton.addEventListener("click", async () => {
+  const newName = prompt("Account name:", account.name);
 
+  if (newName === null) return;
+
+  const trimmedName = newName.trim();
+
+  if (!trimmedName) {
+    alert("Account name cannot be empty.");
+    return;
+  }
+
+  const newInstitution = prompt(
+    "Bank or institution:",
+    account.institution || ""
+  );
+
+  if (newInstitution === null) return;
+
+  const newType = prompt(
+    "Account type (transaction, savings, credit_card, mortgage, loan, other):",
+    account.account_type
+  );
+
+  if (newType === null) return;
+
+  const validTypes = [
+    "transaction",
+    "savings",
+    "credit_card",
+    "mortgage",
+    "loan",
+    "other"
+  ];
+
+  if (!validTypes.includes(newType.trim())) {
+    alert("Please enter a valid account type.");
+    return;
+  }
+
+  editButton.disabled = true;
+  editButton.textContent = "Saving...";
+
+  const { data, error } = await db
+    .from("accounts")
+    .update({
+      name: trimmedName,
+      institution: newInstitution.trim() || null,
+      account_type: newType.trim()
+    })
+    .eq("id", account.id)
+    .select("id");
+
+  if (error || !data || data.length !== 1) {
+    alert("Unable to update account: " +
+      (error ? error.message : "No account was updated."));
+    editButton.disabled = false;
+    editButton.textContent = "Edit";
+    return;
+  }
+
+  await loadAccounts();
 });
+
 
 item.append(name, details, editButton);
 
