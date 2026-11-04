@@ -668,6 +668,16 @@ editButton.textContent = "Edit";
 editButton.className = "secondary";
 
 editButton.style.marginTop = "8px";
+
+editButton.addEventListener("click", () => {
+
+  alert("Account editing is coming next.");
+
+});
+
+item.append(name, details, editButton);
+
+status.appendChild(item);
   
 });
 
