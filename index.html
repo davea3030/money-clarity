@@ -764,17 +764,60 @@ deleteButton.type = "button";
 deleteButton.textContent = "Delete";
 deleteButton.className = "secondary";
 deleteButton.style.marginTop = "8px";
-deleteButton.style.marginLeft = "8px";
+deleteButton.style.marginLeft = "
 
-deleteButton.addEventListener("click", () => {
-  const confirmed = confirm(
-    `Delete "${account.name}"?\n\n` +
-    "This action cannot be undone."
-  );
+  
+deleteButton.addEventListener("click", async () => {
+  deleteButton.disabled = true;
 
-  if (!confirmed) return;
+  try {
+    const { count, error: checkError } = await db
+      .from("transactions")
+      .select("id", { count: "exact", head: true })
+      .eq("account_id", account.id);
 
-  alert("Account deletion will be enabled next.");
+    if (checkError) {
+      alert("Unable to check linked transactions: " +
+        checkError.message);
+      return;
+    }
+
+    if (count > 0) {
+      alert(
+        "This account has linked transactions and " +
+        "cannot be deleted."
+      );
+      return;
+    }
+
+    const confirmed = confirm(
+      `Delete "${account.name}"?\n\n` +
+      "This action cannot be undone."
+    );
+
+    if (!confirmed) return;
+
+    const { data, error } = await db
+      .from("accounts")
+      .delete()
+      .eq("id", account.id)
+      .select("id");
+
+    if (error || !data || data.length !== 1) {
+      alert(
+        "Unable to delete account: " +
+        (error ? error.message : "No account was deleted.")
+      );
+      return;
+    }
+
+    await loadAccounts();
+
+  } catch (error) {
+    alert("Deletion failed: " + error.message);
+  } finally {
+    deleteButton.disabled = false;
+  }
 });
 
 
