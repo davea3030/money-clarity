@@ -510,6 +510,39 @@ function setDashboardVisible(visible) {
   }
 }
 
+async function loadAccounts() {
+  const status = document.getElementById("accountsStatus");
+
+  if (!status) return;
+
+  status.textContent = "Loading accounts...";
+
+  const { data: { user }, error: authError } =
+    await db.auth.getUser();
+
+  if (authError || !user) {
+    status.textContent = "Please sign in.";
+    return;
+  }
+
+  const { data, error } = await db
+    .from("accounts")
+    .select("id, name")
+    .order("name");
+
+  if (error) {
+    status.textContent = "Unable to load accounts: " + error.message;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    status.textContent = "No accounts added yet.";
+    return;
+  }
+
+  status.textContent = data.map(account => account.name).join(", ");
+}
+
 async function signIn() {
   const email = document.getElementById("loginEmail").value.trim();
   const password = document.getElementById("loginPassword").value;
