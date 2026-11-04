@@ -133,6 +133,13 @@ footer{text-align:center;color:#69788a;font-size:12px;padding:20px}
     Test accounts connection
   </button>
 
+<div class="actions">
+  <button class="secondary"
+    onclick="testTransactionsConnection()">
+    Test transactions connection
+  </button>
+</div>
+
 </div>
 
 
@@ -561,6 +568,24 @@ async function signOut() {
   }
 }
 
+
+async function testTransactionsConnection() {
+  const status = document.getElementById("loginStatus");
+
+  const { data, error } = await db
+    .from("transactions")
+    .select("id, description, amount");
+
+  if (error) {
+    status.textContent =
+      "Transactions connection error: " + error.message;
+    return;
+  }
+
+  status.textContent =
+    "Transactions connection successful · " +
+    data.length + " transactions found";
+}
 
 async function testAccountsConnection() {
   const status = document.getElementById("loginStatus");
