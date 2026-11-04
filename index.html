@@ -138,6 +138,41 @@ footer{text-align:center;color:#69788a;font-size:12px;padding:20px}
     onclick="testTransactionsConnection()">
     Test transactions connection
   </button>
+
+async function testTransactionWriteSecurity() {
+  const status = document.getElementById("loginStatus");
+
+  const householdId = prompt("Paste the household_id:");
+  if (!householdId) return;
+
+  const accountId = prompt("Paste the test account id:");
+  if (!accountId) return;
+
+  status.textContent = "Testing transaction security...";
+
+  const { data, error } = await db
+    .from("transactions")
+    .insert({
+      household_id: householdId.trim(),
+      account_id: accountId.trim(),
+      transaction_date: "2026-11-01",
+      description: "SECURITY TEST - DELETE LATER",
+      amount: -1,
+      category: "Test"
+    })
+    .select("id");
+
+  if (error) {
+    status.textContent =
+      "Write blocked: " + error.message;
+    return;
+  }
+
+  status.textContent =
+    "WARNING: Write succeeded! " +
+    (data?.length ?? 0) + " transaction created.";
+}
+
 </div>
 
 </div>
@@ -568,6 +603,40 @@ async function signOut() {
   }
 }
 
+
+async function testTransactionWriteSecurity() {
+  const status = document.getElementById("loginStatus");
+
+  const householdId = prompt("Paste the household_id:");
+  if (!householdId) return;
+
+  const accountId = prompt("Paste the test account id:");
+  if (!accountId) return;
+
+  status.textContent = "Testing transaction security...";
+
+  const { data, error } = await db
+    .from("transactions")
+    .insert({
+      household_id: householdId.trim(),
+      account_id: accountId.trim(),
+      transaction_date: "2026-11-01",
+      description: "SECURITY TEST - DELETE LATER",
+      amount: -1,
+      category: "Test"
+    })
+    .select("id");
+
+  if (error) {
+    status.textContent =
+      "Write blocked: " + error.message;
+    return;
+  }
+
+  status.textContent =
+    "WARNING: Write succeeded! " +
+    (data?.length ?? 0) + " transaction created.";
+}
 
 async function testTransactionsConnection() {
   const status = document.getElementById("loginStatus");
