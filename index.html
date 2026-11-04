@@ -689,25 +689,49 @@ editButton.addEventListener("click", async () => {
 
   if (newInstitution === null) return;
 
-  const newType = prompt(
-    "Account type (transaction, savings, credit_card, mortgage, loan, other):",
-    account.account_type
-  );
+  
+const accountTypes = [
+  ["transaction", "Transaction account"],
+  ["savings", "Savings account"],
+  ["credit_card", "Credit card"],
+  ["mortgage", "Mortgage"],
+  ["loan", "Other loan"],
+  ["other", "Other"]
+];
 
-  if (newType === null) return;
+const choices = accountTypes
+  .map(([value, label], index) =>
+    `${index + 1}. ${label}`
+  )
+  .join("\n");
 
-  const validTypes = [
-    "transaction",
-    "savings",
-    "credit_card",
-    "mortgage",
-    "loan",
-    "other"
-  ];
+const currentChoice = accountTypes.findIndex(
+  ([value]) => value === account.account_type
+) + 1;
 
-  if (!validTypes.includes(newType.trim())) {
-    alert("Please enter a valid account type.");
-    return;
+const selection = prompt(
+  "Choose account type:\n\n" + choices +
+  "\n\nEnter a number from 1 to 6:",
+  String(currentChoice)
+);
+
+if (selection === null) return;
+
+const selectedIndex = Number(selection.trim()) - 1;
+
+if (
+  !Number.isInteger(selectedIndex) ||
+  selectedIndex < 0 ||
+  selectedIndex >= accountTypes.length
+) {
+  alert("Please select a number from 1 to 6.");
+  return;
+}
+
+const newType = accountTypes[selectedIndex][0];
+
+
+  
   }
 
   editButton.disabled = true;
