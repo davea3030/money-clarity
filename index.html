@@ -161,6 +161,13 @@ footer{text-align:center;color:#69788a;font-size:12px;padding:20px}
   </button>
 </div>
 
+<div class="actions">
+  <button class="secondary"
+    onclick="testTransactionDeleteSecurity()">
+    Test transaction delete security
+  </button>
+</div>
+
 
 
 </div>
@@ -586,6 +593,37 @@ async function signOut() {
   } catch (error) {
     status.textContent = "Sign-out failed: " + error.message;
   }
+}
+
+async function testTransactionDeleteSecurity() {
+  const status = document.getElementById("loginStatus");
+
+  const transactionId = prompt("Paste the test transaction ID:");
+  if (!transactionId) return;
+
+  status.textContent = "Testing delete security...";
+
+  const { data, error } = await db
+    .from("transactions")
+    .delete()
+    .eq("id", transactionId.trim())
+    .select("id");
+
+  if (error) {
+    status.textContent =
+      "Delete blocked: " + error.message;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    status.textContent =
+      "Delete blocked: No accessible transaction was deleted.";
+    return;
+  }
+
+  status.textContent =
+    "WARNING: Delete succeeded! " +
+    data.length + " transaction deleted.";
 }
 
 
