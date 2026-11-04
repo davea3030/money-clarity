@@ -606,7 +606,7 @@ async function loadAccounts() {
 
   const { data, error } = await db
     .from("accounts")
-    .select("id, name")
+    .select("id, name, account_type, institution")
     .order("name");
 
   if (error) {
@@ -619,7 +619,31 @@ async function loadAccounts() {
     return;
   }
 
-  status.textContent = data.map(account => account.name).join(", ");
+  
+status.replaceChildren();
+
+data.forEach(account => {
+  const item = document.createElement("div");
+  item.style.padding = "12px 0";
+  item.style.borderBottom = "1px solid #ddd";
+
+  const name = document.createElement("strong");
+  name.textContent = account.name;
+
+  const details = document.createElement("div");
+  details.style.fontSize = "14px";
+  details.style.color = "#64748b";
+
+  const type = account.account_type.replaceAll("_", " ");
+  details.textContent = [
+    type,
+    account.institution
+  ].filter(Boolean).join(" · ");
+
+  item.append(name, details);
+  status.appendChild(item);
+});
+
 }
 
 async function signIn() {
