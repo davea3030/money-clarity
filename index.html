@@ -126,6 +126,16 @@ footer{text-align:center;color:#69788a;font-size:12px;padding:20px}
   </div>
 
   <p id="loginStatus" class="muted"></p>
+
+<div class="actions">
+  <button class="secondary"
+    onclick="testAccountsConnection()">
+    Test accounts connection
+  </button>
+
+</div>
+
+
 </div>
 
 <div class="warning" style="margin-bottom:15px">
@@ -551,6 +561,24 @@ async function signOut() {
   }
 }
 
+
+async function testAccountsConnection() {
+  const status = document.getElementById("loginStatus");
+
+  const { data, error } = await db
+    .from("accounts")
+    .select("id, name");
+
+  if (error) {
+    status.textContent =
+      "Accounts connection error: " + error.message;
+    return;
+  }
+
+  status.textContent =
+    "Accounts connection successful · " +
+    data.length + " accounts found";
+}
 
 async function restoreLogin() {
   const status = document.getElementById("loginStatus");
