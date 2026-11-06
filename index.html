@@ -704,11 +704,15 @@ const lastFourDisplay = account.last_four
   ? "•••• " + account.last_four
   : null;
 
+
+  
 details.textContent = [
   type,
   account.institution,
-  lastFourDisplay
+  lastFourDisplay,
+  account.is_offset ? "Mortgage offset" : null
 ].filter(Boolean).join(" · ");
+
 
 
   const editButton = document.createElement("button");
