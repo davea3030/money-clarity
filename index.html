@@ -724,6 +724,20 @@ editButton.addEventListener("click", async () => {
 
   if (newInstitution === null) return;
 
+const newLastFour = prompt(
+  "Last 4 digits (leave blank if none):",
+  account.last_four || ""
+);
+
+if (newLastFour === null) return;
+
+const cleanedLastFour = newLastFour.trim();
+
+if (cleanedLastFour && !/^[0-9]{4}$/.test(cleanedLastFour)) {
+  alert("Enter exactly four digits, or leave blank.");
+  return;
+}
+
   
 const accountTypes = [
   ["transaction", "Transaction account"],
