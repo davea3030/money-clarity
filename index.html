@@ -788,11 +788,14 @@ const newType = accountTypes[selectedIndex][0];
 
   const { data, error } = await db
     .from("accounts")
-    .update({
-      name: trimmedName,
-      institution: newInstitution.trim() || null,
-      account_type: newType.trim()
-    })
+    
+.update({
+  name: newName.trim(),
+  institution: newInstitution.trim() || null,
+  account_type: selectedType,
+  last_four: cleanedLastFour || null
+})
+
     .eq("id", account.id)
     .select("id");
 
