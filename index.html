@@ -609,13 +609,16 @@ if (lastFour && !/^[0-9]{4}$/.test(lastFour)) {
     .from("accounts")
     
 
+
 .insert({
   household_id: households[0].id,
   name: name,
   account_type: accountType,
   institution: institution || null,
-  last_four: lastFour || null
+  last_four: lastFour || null,
+  is_offset: false
 });
+
 
 
 
