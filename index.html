@@ -666,7 +666,9 @@ async function loadAccounts() {
   const { data, error } = await db
     .from("accounts")
     
-.select("id, name, account_type, institution, last_four")
+
+.select("id, name, account_type, institution, last_four, is_offset")
+
 
     .order("name");
 
