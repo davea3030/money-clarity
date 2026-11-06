@@ -826,14 +826,15 @@ const newIsOffset = offsetChoice === "Y";
   const { data, error } = await db
     .from("accounts")
     
+
 .update({
   name: newName.trim(),
   institution: newInstitution.trim() || null,
-  
-account_type: newType,
-
-  last_four: cleanedLastFour || null
+  account_type: newType,
+  last_four: cleanedLastFour || null,
+  is_offset: newIsOffset
 })
+
 
     .eq("id", account.id)
     .select("id");
