@@ -562,12 +562,16 @@ async function addAccount() {
   
 const institutionInput = document.getElementById("newAccountInstitution");
 
+const lastFourInput = document.getElementById("newAccountLastFour");
+
   const status = document.getElementById("accountsStatus");
 
   const name = nameInput.value.trim();
   const accountType = typeInput.value;
   
 const institution = institutionInput.value.trim();
+
+const lastFour = lastFourInput.value.trim();
 
 
   if (!name) {
