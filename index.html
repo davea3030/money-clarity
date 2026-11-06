@@ -635,7 +635,9 @@ async function loadAccounts() {
 
   const { data, error } = await db
     .from("accounts")
-    .select("id, name, account_type, institution")
+    
+.select("id, name, account_type, institution, last_four")
+
     .order("name");
 
   if (error) {
@@ -663,11 +665,19 @@ data.forEach(account => {
   details.style.fontSize = "14px";
   details.style.color = "#64748b";
 
-  const type = account.account_type.replaceAll("_", " ");
-  details.textContent = [
-    type,
-    account.institution
-  ].filter(Boolean).join(" · ");
+  
+const type = account.account_type.replaceAll("_", " ");
+
+const lastFourDisplay = account.last_four
+  ? "•••• " + account.last_four
+  : null;
+
+details.textContent = [
+  type,
+  account.institution,
+  lastFourDisplay
+].filter(Boolean).join(" · ");
+
 
   const editButton = document.createElement("button");
 
