@@ -576,6 +576,8 @@ const lastFourInput = document.getElementById("newAccountLastFour");
   const name = nameInput.value.trim();
   const accountType = typeInput.value;
   
+const isOffset = document.getElementById("newAccountIsOffset").checked;
+
 const institution = institutionInput.value.trim();
 
 const lastFour = lastFourInput.value.trim();
@@ -623,7 +625,7 @@ if (lastFour && !/^[0-9]{4}$/.test(lastFour)) {
   account_type: accountType,
   institution: institution || null,
   last_four: lastFour || null,
-  is_offset: false
+  is_offset: isOffset
 });
 
 
