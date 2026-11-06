@@ -608,12 +608,15 @@ if (lastFour && !/^[0-9]{4}$/.test(lastFour)) {
   const { error } = await db
     .from("accounts")
     
+
 .insert({
   household_id: households[0].id,
   name: name,
   account_type: accountType,
-  institution: institution || null
+  institution: institution || null,
+  last_four: lastFour || null
 });
+
 
 
   if (error) {
