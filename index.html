@@ -573,6 +573,11 @@ const institution = institutionInput.value.trim();
 
 const lastFour = lastFourInput.value.trim();
 
+if (lastFour && !/^[0-9]{4}$/.test(lastFour)) {
+  status.textContent = "Enter exactly four digits, or leave blank.";
+  return;
+}
+
 
   if (!name) {
     status.textContent = "Please enter an account name.";
