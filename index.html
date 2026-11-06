@@ -801,6 +801,22 @@ if (
 const newType = accountTypes[selectedIndex][0];
 
 
+const offsetAnswer = prompt(
+  "Is this a mortgage offset account?\n\nEnter Y for Yes or N for No:",
+  account.is_offset ? "Y" : "N"
+);
+
+if (offsetAnswer === null) return;
+
+const offsetChoice = offsetAnswer.trim().toUpperCase();
+
+if (offsetChoice !== "Y" && offsetChoice !== "N") {
+  alert("Please enter Y or N.");
+  return;
+}
+
+const newIsOffset = offsetChoice === "Y";
+
   
   
 
