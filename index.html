@@ -637,10 +637,13 @@ if (lastFour && !/^[0-9]{4}$/.test(lastFour)) {
   }
 
 
+
 nameInput.value = "";
 institutionInput.value = "";
 lastFourInput.value = "";
+document.getElementById("newAccountIsOffset").checked = false;
 await loadAccounts();
+
 
 
 }
