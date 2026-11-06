@@ -792,7 +792,9 @@ const newType = accountTypes[selectedIndex][0];
 .update({
   name: newName.trim(),
   institution: newInstitution.trim() || null,
-  account_type: selectedType,
+  
+account_type: newType,
+
   last_four: cleanedLastFour || null
 })
 
