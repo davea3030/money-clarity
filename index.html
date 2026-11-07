@@ -1,0 +1,1064 @@
+
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Money Clarity</title>
+
+<style>
+
+:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#172333;background:#f4f6f9}
+
+*{box-sizing:border-box}
+
+body{margin:0}
+
+header{background:#14283e;color:white;padding:22px 18px}
+
+header h1{margin:0;font-size:25px}
+
+header p{margin:5px 0;color:#bed0df}
+
+main{max-width:850px;margin:auto;padding:16px}
+
+.card{background:white;border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 2px 9px #152c4010}
+
+h2{font-size:19px;margin:0 0 14px}
+
+small,.muted{color:#69788a}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.metric{background:#edf3f8;border-radius:10px;padding:13px}
+
+.metric strong{display:block;font-size:21px;margin-top:5px}
+
+button,select{font:inherit;padding:11px;border-radius:9px}
+
+button{border:0;background:#1767b2;color:white;cursor:pointer}
+
+button.secondary{background:#e7edf3;color:#172333}
+
+button:disabled{opacity:.45}
+
+select{width:100%;border:1px solid #ccd5df;background:white}
+
+label{display:block;font-weight:600;margin:14px 0 6px}
+
+.tabs{display:flex;gap:8px;overflow:auto;margin-bottom:15px}
+
+.tabs button{white-space:nowrap}
+
+.tabs button.active{background:#14283e}
+
+.hidden{display:none}
+
+.transaction{padding:12px 0;border-bottom:1px solid #e7edf3}
+
+.transaction:last-child{border:0}
+
+.row{display:flex;justify-content:space-between;gap:12px;align-items:center}
+
+.tag{font-size:12px;background:#edf3f8;border-radius:15px;padding:4px 8px}
+
+.warning{background:#fff3dc;padding:12px;border-radius:9px}
+
+.success{background:#e8f5ed;padding:12px;border-radius:9px}
+
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+
+footer{text-align:center;color:#69788a;font-size:12px;padding:20px}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>Money Clarity</h1>
+
+<p>Understand your money. Get ahead.</p>
+
+</header>
+
+<main>
+
+<div class="card" id="loginCard">
+  <h2>Money Clarity Login</h2>
+  <p class="muted">
+    Sign in to your private household account.
+  </p>
+
+  <label for="loginEmail">Email</label>
+  <input
+    id="loginEmail"
+    type="email"
+    autocomplete="username"
+    placeholder="Your email address"
+    style="width:100%;padding:12px"
+  >
+
+  <label for="loginPassword">Password</label>
+  <input
+    id="loginPassword"
+    type="password"
+    autocomplete="current-password"
+    placeholder="Your password"
+    style="width:100%;padding:12px"
+  >
+
+  <div class="actions">
+    <button onclick="signIn()">
+      Sign in
+    </button>
+    <button class="secondary" onclick="signOut()">
+      Sign out
+    </button>
+  </div>
+
+  <p id="loginStatus" class="muted"></p>
+
+
+</div>
+
+
+
+
+
+
+</div>
+
+<div class="warning" style="margin-bottom:15px">
+<strong>Import setup in progress</strong>
+<div>Transactions are read from your private Supabase household. CSV uploading is not enabled yet. Dashboard figures remain illustrative.</div>
+</div>
+
+
+<div class="tabs hidden" id="appTabs">
+
+
+<button class="active" onclick="showTab('dashboard',this)">Dashboard</button>
+
+<button onclick="showTab('transactions',this)">Transactions</button>
+
+
+<button onclick="showTab('accounts',this); loadAccounts();">Accounts</button>
+
+
+<button onclick="showTab('review',this)">Category review</button>
+
+<button onclick="showTab('rules',this)">Rules</button>
+
+</div>
+
+<section id="accounts" class="hidden">
+  <div class="card">
+    <h2>Household accounts</h2>
+    <p>Manage the bank accounts and credit cards included in Money Clarity.</p>
+    <p id="accountsStatus">No accounts loaded yet.</p>
+    
+<div class="actions">
+  <input
+    type="text"
+    id="newAccountName"
+    placeholder="Account name"
+    maxlength="100"
+    autocomplete="off"
+  >
+
+<input
+  type="text"
+  id="newAccountInstitution"
+  placeholder="Bank or institution (optional)"
+  maxlength="100"
+  autocomplete="off"
+>
+
+
+<input
+  type="text"
+  id="newAccountLastFour"
+  placeholder="Last 4 digits (optional)"
+  maxlength="4"
+  inputmode="numeric"
+  pattern="[0-9]{4}"
+  autocomplete="off"
+>
+<select id="newAccountType">
+  <option value="transaction">Transaction account</option>
+  <option value="savings">Savings account</option>
+  <option value="credit_card">Credit card</option>
+  <option value="mortgage">Mortgage</option>
+  <option value="loan">Other loan</option>
+  <option value="other">Other</option>
+</select>
+
+
+<label>
+  <input type="checkbox" id="newAccountIsOffset">
+  Mortgage offset account
+</label>
+
+  
+  <button
+    type="button"
+    onclick="addAccount()">
+    Add account
+  </button>
+</div>
+
+  </div>
+</section>
+
+<section id="dashboard" class="hidden">
+
+<div class="card">
+
+<h2>Household overview</h2>
+
+<div class="grid">
+
+<div class="metric"><small>Monthly income</small><strong>$12,500</strong></div>
+
+<div class="metric"><small>Monthly expenses</small><strong>$10,200</strong></div>
+
+<div class="metric"><small>Credit card debt</small><strong>$8,400</strong></div>
+
+<div class="metric"><small>Potential surplus</small><strong>$2,300</strong></div>
+
+</div>
+
+<p class="muted">Illustrative figures only. Real insights will come from your private transaction data.</p>
+
+</div>
+
+<div class="card">
+
+<h2>Money Clarity insights</h2>
+
+<p>1. Identify recurring bills and reserve money before payday.</p>
+
+<p>2. Separate credit card repayments from actual purchases.</p>
+
+<p>3. Learn merchant categories to reduce manual reviews.</p>
+
+</div>
+
+</section>
+
+<section id="transactions" class="hidden">
+
+<div class="card">
+
+<h2>Transactions</h2>
+
+<div class="card" style="background:#f4f6f9;box-shadow:none">
+<h3 style="margin:0 0 8px">NAB CSV duplicate-check preview (no import)</h3>
+<p class="muted">Choose the destination account, then select a NAB transaction CSV. The CSV stays in your browser. Transaction fingerprints are compared with your private Supabase records; no CSV rows are saved.</p>
+<label for="csvAccount">Destination account</label>
+<select id="csvAccount"><option value="">Select an account</option></select>
+<label for="csvFile">NAB transaction CSV</label>
+<input type="file" id="csvFile" accept=".csv,text/csv" style="max-width:100%;padding:10px 0">
+<p id="csvPreviewStatus" class="muted" role="status">No file selected.</p>
+<div id="csvPreviewSummary"></div>
+<div id="csvPreviewRows"></div>
+</div>
+<p id="transactionStatus" class="muted">Sign in to load transactions.</p>
+<div id="transactionList"></div>
+
+</div>
+
+</section>
+
+<section id="review" class="hidden">
+
+<div class="card">
+
+<h2>Review uncertain transactions</h2>
+
+<p class="muted">Only transactions without a reliable category appear here.</p>
+
+<div id="reviewContent"></div>
+
+</div>
+
+</section>
+
+<section id="rules" class="hidden">
+
+<div class="card">
+
+<h2>Learned category rules</h2>
+
+<div id="ruleList"></div>
+
+<div class="actions">
+
+<button class="secondary" onclick="resetDemo()">Reset demonstration</button>
+
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+<footer>Money Clarity · Private household finance project</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+<script>
+const SUPABASE_URL = "https://qcmrqzlpmooyqxvtrcan.supabase.co";
+const SUPABASE_KEY = "sb_publishable_IeTOaQeLFWZdyXTVw2OByQ_Y_Naaxkb";
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+</script>
+
+<script>
+
+// Step 180: NAB CSV read-only duplicate-check preview. No database writes.
+const NAB_CSV_HEADERS=["Date","Amount","Account Number","Transaction Type","Transaction Details","Balance","Category","Merchant Name","Processed On"];
+let csvAccounts=[];
+function cents(value,label){
+  const cleaned=String(value).trim().replace(/,/g,"");
+  if(!/^-?\d+(?:\.\d{1,2})?$/.test(cleaned))throw new Error("Invalid "+label+": "+value);
+  const negative=cleaned.startsWith("-");
+  const parts=(negative?cleaned.slice(1):cleaned).split(".");
+  const n=Number(parts[0])*100+Number((parts[1]||"").padEnd(2,"0"));
+  if(!Number.isSafeInteger(n))throw new Error("Invalid "+label);
+  return negative?-n:n;
+}
+async function transactionFingerprint(t){
+  // Versioned canonical representation. Must be reused verbatim by the future importer.
+  const canonical=JSON.stringify(["nab-v1",t.accountNumber,t.date,t.amountCents,t.details,t.type,t.balanceCents,t.processedOn]);
+  const bytes=new TextEncoder().encode(canonical);
+  const digest=await crypto.subtle.digest("SHA-256",bytes);
+  return Array.from(new Uint8Array(digest),x=>x.toString(16).padStart(2,"0")).join("");
+}
+async function existingHashes(accountId){
+  const {data:{user},error:authError}=await db.auth.getUser();
+  if(authError||!user)throw new Error("Sign in before checking duplicates.");
+  const hashes=new Set();
+  for(let from=0;;from+=500){
+    const {data,error}=await db.from("transactions").select("import_hash")
+      .eq("account_id",accountId).not("import_hash","is",null).range(from,from+499);
+    if(error)throw error;
+    (data||[]).forEach(row=>hashes.add(row.import_hash));
+    if(!data||data.length<500)break;
+  }
+  return hashes;
+}
+function parseCsv(text){
+  text=text.replace(/^\uFEFF/,"");
+  const rows=[];let row=[],field="",quoted=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(quoted){
+      if(ch==='"'&&text[i+1]==='"'){field+='"';i++;}
+      else if(ch==='"')quoted=false;
+      else field+=ch;
+    }else if(ch==='"'){if(field)throw new Error("Unexpected quote in CSV.");quoted=true;}
+    else if(ch===','){row.push(field);field="";}
+    else if(ch==='\n'||ch==='\r'){
+      if(ch==='\r'&&text[i+1]==='\n')i++;
+      row.push(field);field="";
+      if(row.some(x=>x.trim()!==""))rows.push(row);
+      row=[];
+    }else field+=ch;
+  }
+  if(quoted)throw new Error("Unclosed quoted CSV field.");
+  row.push(field);
+  if(row.some(x=>x.trim()!==""))rows.push(row);
+  return rows;
+}
+function nabDate(value){
+  const m=/^(\d{1,2})\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{2}|\d{4})$/i.exec(value.trim());
+  if(!m)throw new Error("Unrecognised date: "+value);
+  const months=["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+  const year=m[3].length===2?2000+Number(m[3]):Number(m[3]);
+  const month=months.indexOf(m[2].toLowerCase())+1;
+  const day=Number(m[1]);
+  const d=new Date(Date.UTC(year,month-1,day));
+  if(d.getUTCFullYear()!==year||d.getUTCMonth()+1!==month||d.getUTCDate()!==day)throw new Error("Invalid date: "+value);
+  return `${year}-${String(month).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+}
+async function loadCsvAccounts(){
+  const select=document.getElementById("csvAccount");
+  select.replaceChildren(new Option("Select an account",""));
+  try{
+    const {data:{user},error:authError}=await db.auth.getUser();
+    if(authError||!user)throw new Error("Please sign in first.");
+    const {data,error}=await db.from("accounts").select("id,name,last_four,account_type").order("name");
+    if(error)throw error;
+    csvAccounts=data||[];
+    csvAccounts.forEach(a=>select.add(new Option(`${a.name}${a.last_four?' (•••• '+a.last_four+')':''}`,a.id)));
+  }catch(e){document.getElementById("csvPreviewStatus").textContent="Unable to load accounts: "+e.message;}
+}
+async function previewNabCsv(){
+  const status=document.getElementById("csvPreviewStatus");
+  const summary=document.getElementById("csvPreviewSummary");
+  const output=document.getElementById("csvPreviewRows");
+  summary.replaceChildren();output.replaceChildren();
+  const file=document.getElementById("csvFile").files[0];
+  const account=csvAccounts.find(a=>a.id===document.getElementById("csvAccount").value);
+  if(!account){status.textContent="Select a destination account before previewing.";return;}
+  if(!file){status.textContent="Choose a CSV file.";return;}
+  if(file.size>10*1024*1024){status.textContent="CSV is too large for this preview (10 MB maximum).";return;}
+  try{
+    const rows=parseCsv(await file.text());
+    if(rows.length<2)throw new Error("The CSV contains no transaction rows.");
+    const headers=rows.shift().map(x=>x.trim());
+    for(const name of NAB_CSV_HEADERS){if(!headers.includes(name))throw new Error("Missing NAB column: "+name);}
+    const col=name=>headers.indexOf(name);
+    const parsed=rows.map((r,i)=>{
+      if(r.length!==headers.length)throw new Error(`Row ${i+2}: expected ${headers.length} columns, found ${r.length}.`);
+      const amountCents=cents(r[col("Amount")],`amount on row ${i+2}`);
+      const balanceCents=cents(r[col("Balance")],`balance on row ${i+2}`);
+      const number=r[col("Account Number")].trim();
+      if(!/^\d{4,}$/.test(number))throw new Error(`Row ${i+2}: invalid account number.`);
+      const date=nabDate(r[col("Date")]);
+      const processedRaw=r[col("Processed On")].trim();
+      return {date,amount:amountCents/100,amountCents,balanceCents,
+        accountNumber:number,lastFour:number.slice(-4),
+        details:r[col("Transaction Details")].trim(),merchant:r[col("Merchant Name")].trim(),
+        category:r[col("Category")].trim(),type:r[col("Transaction Type")].trim(),
+        processedOn:processedRaw?nabDate(processedRaw):""};
+    });
+    const endings=[...new Set(parsed.map(x=>x.lastFour))];
+    if(endings.length!==1)throw new Error("This file contains more than one account ending: "+endings.join(", "));
+    if(!account.last_four)throw new Error("Selected account has no last-four digits. Add them in Accounts before previewing.");
+    if(endings[0]!==account.last_four)throw new Error(`CSV account ends ${endings[0]}, but selected account ends ${account.last_four}. Nothing imported.`);
+    status.textContent="Checking transaction fingerprints against Supabase (read-only)...";
+    const existing=await existingHashes(account.id);
+    const seen=new Map();
+    for(const t of parsed){
+      t.hash=await transactionFingerprint(t);
+      seen.set(t.hash,(seen.get(t.hash)||0)+1);
+    }
+    const counts={new:0,imported:0,review:0};
+    for(const t of parsed){
+      // Same fingerprint repeated within a single CSV cannot be resolved safely.
+      t.duplicateStatus=seen.get(t.hash)>1?"Needs review":existing.has(t.hash)?"Already imported":"New";
+      if(t.duplicateStatus==="Needs review")counts.review++;
+      else if(t.duplicateStatus==="Already imported")counts.imported++;
+      else counts.new++;
+    }
+    const dates=parsed.map(x=>x.date).sort();
+    const inflows=parsed.filter(x=>x.amount>0).reduce((n,x)=>n+x.amount,0);
+    const outflows=parsed.filter(x=>x.amount<0).reduce((n,x)=>n+x.amount,0);
+    status.textContent=`Preview only — ${parsed.length} transactions validated for ${account.name} (•••• ${endings[0]}). Nothing has been imported.`;
+    const p=document.createElement("p");
+    p.textContent=`Dates: ${dates[0]} to ${dates[dates.length-1]} · Money in: ${money(inflows)} · Money out: ${money(outflows)} · Missing merchant: ${parsed.filter(x=>!x.merchant).length}`;
+    summary.appendChild(p);
+    const duplicateSummary=document.createElement("p");
+    duplicateSummary.style.fontWeight="600";
+    duplicateSummary.textContent=`Duplicate check: ${counts.new} new · ${counts.imported} already imported · ${counts.review} need review.`;
+    summary.appendChild(duplicateSummary);
+    const warning=document.createElement("p");warning.className="muted";
+    warning.textContent="Fingerprint version nab-v1 uses full account number, date, exact amount, details, type, balance and processed date. Identical fingerprints inside one file require review. This is a read-only check, not a guarantee of unique bank transactions.";
+    summary.appendChild(warning);
+    const heading=document.createElement("h4");heading.textContent="First 10 transactions (preview)";output.appendChild(heading);
+    parsed.slice(0,10).forEach(t=>{
+      const item=document.createElement("div");item.className="transaction";
+      const top=document.createElement("div");top.className="row";
+      const name=document.createElement("strong");name.textContent=t.merchant||t.details||"Transaction";
+      const amount=document.createElement("strong");amount.textContent=money(t.amount);
+      top.append(name,amount);
+      const bottom=document.createElement("small");bottom.textContent=`${t.date} · ${t.duplicateStatus} · NAB category: ${t.category||"Uncategorised"}`;
+      item.append(top,bottom);output.appendChild(item);
+    });
+  }catch(e){summary.replaceChildren();output.replaceChildren();status.textContent="Preview failed: "+e.message;}
+}
+document.getElementById("csvFile").addEventListener("change",previewNabCsv);
+document.getElementById("csvAccount").addEventListener("change",previewNabCsv);
+
+// Step 168: read-only Supabase transactions. No CSV upload or local demo data.
+let transactions = [];
+let transactionLoadState = "Sign in to load transactions.";
+
+function showTab(id,button){
+  document.querySelectorAll("main section").forEach(s=>s.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+  button.classList.add("active");
+  if(id === "transactions") { loadTransactions(); loadCsvAccounts(); }
+  else render();
+}
+
+function money(n){
+  return new Intl.NumberFormat("en-AU",{style:"currency",currency:"AUD"}).format(n);
+}
+
+function render(){
+  renderTransactions();
+  renderReview();
+  renderRules();
+}
+
+function renderTransactions(){
+  const list = document.getElementById("transactionList");
+  const status = document.getElementById("transactionStatus");
+  status.textContent = transactionLoadState;
+  list.replaceChildren();
+  transactions.forEach(t=>{
+    const item=document.createElement("div");
+    item.className="transaction";
+    const top=document.createElement("div");
+    top.className="row";
+    const merchant=document.createElement("strong");
+    merchant.textContent=t.merchant || t.description || "Transaction";
+    const amount=document.createElement("strong");
+    amount.textContent=money(Number(t.amount));
+    top.append(merchant,amount);
+    const bottom=document.createElement("div");
+    bottom.className="row";
+    const date=document.createElement("small");
+    date.textContent=t.transaction_date || "";
+    const category=document.createElement("span");
+    category.className="tag";
+    category.textContent=t.category || "Needs review";
+    bottom.append(date,category);
+    item.append(top,bottom);
+    list.appendChild(item);
+  });
+}
+
+async function loadTransactions(){
+  transactionLoadState="Loading transactions...";
+  transactions=[];
+  renderTransactions();
+  try {
+    const {data:{user},error:authError}=await db.auth.getUser();
+    if(authError || !user) throw new Error("Please sign in.");
+    const {data:households,error:householdError}=await db.from("households").select("id").limit(2);
+    if(householdError) throw householdError;
+    if(!households || households.length !== 1) throw new Error("Expected one accessible household. Check household membership.");
+    const {data,error}=await db.from("transactions")
+      .select("id, household_id, account_id, transaction_date, description, amount, category, merchant")
+      .eq("household_id",households[0].id)
+      .order("transaction_date",{ascending:false})
+      .limit(500);
+    if(error) throw error;
+    transactions=data || [];
+    transactionLoadState=transactions.length
+      ? `Showing ${transactions.length} transaction(s) (up to 500).`
+      : "No transactions imported yet.";
+  } catch(error){
+    transactions=[];
+    transactionLoadState="Unable to load transactions: " + error.message;
+  }
+  renderTransactions();
+}
+
+function renderReview(){
+  document.getElementById("reviewContent").textContent=
+    "Category review will be connected to Supabase after the transaction import is tested.";
+}
+
+function renderRules(){
+  document.getElementById("ruleList").textContent=
+    "Category rules will be connected to Supabase in a later step.";
+}
+
+function resetDemo(){
+  alert("Demonstration transactions have been retired. No real data was changed.");
+}
+
+function setDashboardVisible(visible) {
+  document.getElementById("appTabs")
+    .classList.toggle("hidden", !visible);
+
+  document.querySelectorAll("main section")
+    .forEach(section => section.classList.add("hidden"));
+
+  if (visible) {
+    document.getElementById("dashboard")
+      .classList.remove("hidden");
+  }
+}
+
+async function addAccount() {
+  const nameInput = document.getElementById("newAccountName");
+  const typeInput = document.getElementById("newAccountType");
+  
+const institutionInput = document.getElementById("newAccountInstitution");
+
+const lastFourInput = document.getElementById("newAccountLastFour");
+
+  const status = document.getElementById("accountsStatus");
+
+  const name = nameInput.value.trim();
+  const accountType = typeInput.value;
+  
+const isOffset = document.getElementById("newAccountIsOffset").checked;
+
+const institution = institutionInput.value.trim();
+
+const lastFour = lastFourInput.value.trim();
+
+if (lastFour && !/^[0-9]{4}$/.test(lastFour)) {
+  status.textContent = "Enter exactly four digits, or leave blank.";
+  return;
+}
+
+
+  if (!name) {
+    status.textContent = "Please enter an account name.";
+    return;
+  }
+
+  const { data: { user }, error: authError } =
+    await db.auth.getUser();
+
+  if (authError || !user) {
+    status.textContent = "Please sign in.";
+    return;
+  }
+
+  const { data: households, error: householdError } =
+    await db
+      .from("households")
+      .select("id")
+      .limit(1);
+
+  if (householdError || !households || households.length !== 1) {
+    status.textContent = "Unable to identify your household.";
+    return;
+  }
+
+  status.textContent = "Saving account...";
+
+  const { error } = await db
+    .from("accounts")
+    
+
+
+.insert({
+  household_id: households[0].id,
+  name: name,
+  account_type: accountType,
+  institution: institution || null,
+  last_four: lastFour || null,
+  is_offset: isOffset
+});
+
+
+
+
+  if (error) {
+    status.textContent = "Unable to save account: " + error.message;
+    return;
+  }
+
+
+
+nameInput.value = "";
+institutionInput.value = "";
+lastFourInput.value = "";
+document.getElementById("newAccountIsOffset").checked = false;
+await loadAccounts();
+
+
+
+}
+
+async function loadAccounts() {
+  const status = document.getElementById("accountsStatus");
+
+  if (!status) return;
+
+  status.textContent = "Loading accounts...";
+
+  const { data: { user }, error: authError } =
+    await db.auth.getUser();
+
+  if (authError || !user) {
+    status.textContent = "Please sign in.";
+    return;
+  }
+
+  const { data, error } = await db
+    .from("accounts")
+    
+
+.select("id, name, account_type, institution, last_four, is_offset")
+
+
+    .order("name");
+
+  if (error) {
+    status.textContent = "Unable to load accounts: " + error.message;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    status.textContent = "No accounts added yet.";
+    return;
+  }
+
+  
+status.replaceChildren();
+
+data.forEach(account => {
+  const item = document.createElement("div");
+  item.style.padding = "12px 0";
+  item.style.borderBottom = "1px solid #ddd";
+
+  const name = document.createElement("strong");
+  name.textContent = account.name;
+
+  const details = document.createElement("div");
+  details.style.fontSize = "14px";
+  details.style.color = "#64748b";
+
+  
+const type = account.account_type.replaceAll("_", " ");
+
+const lastFourDisplay = account.last_four
+  ? "•••• " + account.last_four
+  : null;
+
+
+  
+details.textContent = [
+  type,
+  account.institution,
+  lastFourDisplay,
+  account.is_offset ? "Mortgage offset" : null
+].filter(Boolean).join(" · ");
+
+
+
+  const editButton = document.createElement("button");
+
+editButton.type = "button";
+
+editButton.textContent = "Edit";
+
+editButton.className = "secondary";
+
+editButton.style.marginTop = "8px";
+
+
+editButton.addEventListener("click", async () => {
+  const newName = prompt("Account name:", account.name);
+
+  if (newName === null) return;
+
+  const trimmedName = newName.trim();
+
+  if (!trimmedName) {
+    alert("Account name cannot be empty.");
+    return;
+  }
+
+  const newInstitution = prompt(
+    "Bank or institution:",
+    account.institution || ""
+  );
+
+  if (newInstitution === null) return;
+
+const newLastFour = prompt(
+  "Last 4 digits (leave blank if none):",
+  account.last_four || ""
+);
+
+if (newLastFour === null) return;
+
+const cleanedLastFour = newLastFour.trim();
+
+if (cleanedLastFour && !/^[0-9]{4}$/.test(cleanedLastFour)) {
+  alert("Enter exactly four digits, or leave blank.");
+  return;
+}
+
+  
+const accountTypes = [
+  ["transaction", "Transaction account"],
+  ["savings", "Savings account"],
+  ["credit_card", "Credit card"],
+  ["mortgage", "Mortgage"],
+  ["loan", "Other loan"],
+  ["other", "Other"]
+];
+
+const choices = accountTypes
+  .map(([value, label], index) =>
+    `${index + 1}. ${label}`
+  )
+  .join("\n");
+
+const currentChoice = accountTypes.findIndex(
+  ([value]) => value === account.account_type
+) + 1;
+
+const selection = prompt(
+  "Choose account type:\n\n" + choices +
+  "\n\nEnter a number from 1 to 6:",
+  String(currentChoice)
+);
+
+if (selection === null) return;
+
+const selectedIndex = Number(selection.trim()) - 1;
+
+if (
+  !Number.isInteger(selectedIndex) ||
+  selectedIndex < 0 ||
+  selectedIndex >= accountTypes.length
+) {
+  alert("Please select a number from 1 to 6.");
+  return;
+}
+
+const newType = accountTypes[selectedIndex][0];
+
+
+const offsetAnswer = prompt(
+  "Is this a mortgage offset account?\n\nEnter Y for Yes or N for No:",
+  account.is_offset ? "Y" : "N"
+);
+
+if (offsetAnswer === null) return;
+
+const offsetChoice = offsetAnswer.trim().toUpperCase();
+
+if (offsetChoice !== "Y" && offsetChoice !== "N") {
+  alert("Please enter Y or N.");
+  return;
+}
+
+const newIsOffset = offsetChoice === "Y";
+
+  
+  
+
+  editButton.disabled = true;
+  editButton.textContent = "Saving...";
+
+  const { data, error } = await db
+    .from("accounts")
+    
+
+.update({
+  name: newName.trim(),
+  institution: newInstitution.trim() || null,
+  account_type: newType,
+  last_four: cleanedLastFour || null,
+  is_offset: newIsOffset
+})
+
+
+    .eq("id", account.id)
+    .select("id");
+
+  if (error || !data || data.length !== 1) {
+    alert("Unable to update account: " +
+      (error ? error.message : "No account was updated."));
+    editButton.disabled = false;
+    editButton.textContent = "Edit";
+    return;
+  }
+
+  await loadAccounts();
+});
+
+
+const deleteButton = document.createElement("button");
+deleteButton.type = "button";
+deleteButton.textContent = "Delete";
+deleteButton.className = "secondary";
+deleteButton.style.marginTop = "8px";
+deleteButton.style.marginLeft = "8px";
+
+  
+deleteButton.addEventListener("click", async () => {
+  deleteButton.disabled = true;
+
+  try {
+    const { count, error: checkError } = await db
+      .from("transactions")
+      .select("id", { count: "exact", head: true })
+      .eq("account_id", account.id);
+
+    if (checkError) {
+      alert("Unable to check linked transactions: " +
+        checkError.message);
+      return;
+    }
+
+    if (count > 0) {
+      alert(
+        "This account has linked transactions and " +
+        "cannot be deleted."
+      );
+      return;
+    }
+
+    const confirmed = confirm(
+      `Delete "${account.name}"?\n\n` +
+      "This action cannot be undone."
+    );
+
+    if (!confirmed) return;
+
+    const { data, error } = await db
+      .from("accounts")
+      .delete()
+      .eq("id", account.id)
+      .select("id");
+
+    if (error || !data || data.length !== 1) {
+      alert(
+        "Unable to delete account: " +
+        (error ? error.message : "No account was deleted.")
+      );
+      return;
+    }
+
+    await loadAccounts();
+
+  } catch (error) {
+    alert("Deletion failed: " + error.message);
+  } finally {
+    deleteButton.disabled = false;
+  }
+});
+
+
+item.append(name, details, editButton, deleteButton);
+
+
+status.appendChild(item);
+  
+});
+
+}
+
+async function signIn() {
+  const email = document.getElementById("loginEmail").value.trim();
+  const password = document.getElementById("loginPassword").value;
+  const status = document.getElementById("loginStatus");
+
+  status.textContent = "Signing in...";
+
+  try {
+    const { data, error } =
+      await db.auth.signInWithPassword({ email, password });
+
+    if (error) throw error;
+
+    status.textContent =
+      "Signed in as " + data.user.email;
+
+const { data: households, error: householdError } =
+  await db
+    .from("households")
+    .select("id, name")
+    .limit(1);
+
+if (householdError) {
+  throw householdError;
+}
+
+if (!households || households.length === 0) {
+  status.textContent =
+    "Signed in, but no household membership was found.";
+  return;
+}
+
+status.textContent =
+  "Signed in · " + households[0].name;
+
+setDashboardVisible(true);
+  await loadTransactions();
+
+    document.getElementById("loginPassword").value = "";
+  } catch (error) {
+    status.textContent = "Sign-in failed: " + error.message;
+  }
+}
+
+async function signOut() {
+  const status = document.getElementById("loginStatus");
+
+  status.textContent = "Signing out...";
+
+  try {
+    const { error } = await db.auth.signOut();
+
+    if (error) throw error;
+
+    status.textContent = "Signed out. Please sign in.";
+    transactions=[]; transactionLoadState="Sign in to load transactions."; render();
+    document.getElementById("loginPassword").value = "";
+  } catch (error) {
+    status.textContent = "Sign-out failed: " + error.message;
+  }
+}
+
+
+async function restoreLogin() {
+  const status = document.getElementById("loginStatus");
+
+  const { data: { session }, error } =
+    await db.auth.getSession();
+
+  if (error || !session) {
+    status.textContent = "Please sign in.";
+    return;
+  }
+
+  const { data: households, error: householdError } =
+    await db
+      .from("households")
+      .select("id, name")
+      .limit(1);
+
+  if (householdError || !households?.length) {
+    status.textContent =
+      "Signed in, but household access could not be verified.";
+    return;
+  }
+
+  status.textContent =
+    "Signed in · " + households[0].name;
+
+setDashboardVisible(true);
+  await loadTransactions();
+}
+
+restoreLogin();
+
+db.auth.onAuthStateChange((event) => {
+  if (event === "SIGNED_OUT") {
+    document.getElementById("loginStatus").textContent =
+      "Signed out. Please sign in.";
+    
+setDashboardVisible(false);
+    transactions=[]; transactionLoadState="Sign in to load transactions."; render();
+
+    document.getElementById("loginPassword").value = "";
+setDashboardVisible(false); 
+  }
+});
+
+</script>
+
+</body>
+
+</html>
